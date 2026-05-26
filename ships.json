@@ -1,6 +1,6 @@
 [
   {
-    "shipName": "Ross248",
+    "shipName": "Small",
     "maxMass": 1000,
     "maxGab": 500,
     "maxSpeed": 40,
@@ -8,7 +8,7 @@
     "fuelTank": 375
   },
   {
-    "shipName": "Ross248",
+    "shipName": "Medium",
     "maxMass": 4000,
     "maxGab": 1000,
     "maxSpeed": 20,
@@ -16,7 +16,7 @@
     "fuelTank": 700
   },
   {
-    "shipName": "Ross248",
+    "shipName": "Large",
     "maxMass": 6000,
     "maxGab": 1500,
     "maxSpeed": 10,
