@@ -1,20 +1,29 @@
 #include <iostream>
 #include <windows.h> 
 #include "Station.h"
+#include <fstream>
+#include <vector>
 
 using namespace std;
+using json = nlohmann::json;
 
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
 
-    Station A, B;
-    A.x = 6.0;
-    A.y = 2.0;
-    B.x = 3.0;
-    B.y = 4.0;
+    ifstream file("stations.json");
+    if (!file.is_open()) {
+        cout << "Ошибка: Не удалось открыть файл stations.json!" << endl;
+        return 1;
+    }
+    json j;
+    file >> j;
+    file.close();
 
-    cout << "Расстояние между станциями: " << Distance(A, B) << endl;
+    vector<Station> space_stations = j.get<vector<Station>>();
+
+
+    cout << "Расстояние между станциями: " << Distance(space_stations[0], space_stations[1]) << endl;
 
     return 0;
 }
