@@ -8,6 +8,14 @@ double Distance(const Station& From, const Station& To) {
     double stationDistance = sqrt(pow((To.x - From.x), 2) + pow((To.y - From.y), 2));
     return stationDistance;
 }
+double multiDistance(const vector<Station> stations) {
+    int n=stations.size();
+    double distance=0;
+    for (int i=1; i<n; i++){
+        distance=Distance(stations[i-1], stations[i])+distance;
+    }
+    return distance;
+}
 int StationIdx(const vector<Station>& stations, string name){
     int n=stations.size();
     for (int i=0; i<n; i++){
