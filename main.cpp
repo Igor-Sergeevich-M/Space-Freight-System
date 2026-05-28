@@ -3,6 +3,10 @@
 #include <vector>
 #include <windows.h> // Добавили для корректной работы кодировки и очистки в Windows
 #include "Cargo.h"
+#include "Station.h"
+#include "Ship.h"
+
+const double INF = 1e9;
 
 // Функция вывода красивой шапки
 void title() {
@@ -26,6 +30,26 @@ void title() {
     std::cout << "\n";
 }
 
+double shipCost(Ship ship, std::vector<Station> path){
+
+    int parkingPricePerGab=1;
+    int fuelPricePerGallon=100;
+
+    int numberStations=path.size();
+    int parkingPrice=parkingPricePerGab*ship.maxGab;
+    int totalParkingPrice=parkingPrice*numberStations;
+    double totalFuelPrice=multiDistance(path)*ship.fuelEfficiency*fuelPricePerGallon;
+    double totalShipCost=totalFuelPrice+totalParkingPrice;
+    return totalShipCost;
+}
+double allShipsPrice(const vector<Ship> ships, const vector<Station> stations, const Station& From, const Station& To, double INF){
+    double totalCost=0;
+    int n=ships.size();
+    for(int i=0; i<n; i++){
+        totalCost=totalCost+shipCost(ships[i], PathFinder(stations, From, To, fuelDistance(ships[i]), INF));
+    }
+    return totalCost;
+}
 int main() {
     #ifdef _WIN32
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -33,6 +57,7 @@ int main() {
     GetConsoleMode(hOut, &dwMode);
     SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
     #endif
+
     std::vector<Cargo> cargoList;
 
     int cargoAmount;
