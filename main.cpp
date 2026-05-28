@@ -30,7 +30,7 @@ void title() {
     std::cout << "\n";
 }
 
-double shipCost(Ship ship, std::vector<Station> path){
+double shipCost(const Ship ship, std::vector<Station> path){
 
     int parkingPricePerGab=1;
     int fuelPricePerGallon=100;
@@ -49,6 +49,21 @@ double allShipsPrice(const vector<Ship> ships, const vector<Station> stations, c
         totalCost=totalCost+shipCost(ships[i], PathFinder(stations, From, To, fuelDistance(ships[i]), INF));
     }
     return totalCost;
+}
+double shipTime(const Ship ship, std::vector<Station> path){
+    return (365/ship.maxSpeed)*multiDistance(path);
+}
+double totalShipTime(const vector<Ship> ships, const vector<Station> stations, const Station& From, const Station& To, double INF){
+    double maxTime=0.0;
+    int n=ships.size();
+    for(int i=0; i<n; i++){
+        double curTime=shipTime(ships[i], PathFinder(stations, From, To, fuelDistance(ships[i]), INF));
+        if (maxTime<curTime) maxTime=curTime;
+    }
+    return maxTime;
+}
+void infoOut(const vector<Ship> ships, const vector<Station> stations, const Station& From, const Station& To, double INF){
+    
 }
 int main() {
     #ifdef _WIN32
