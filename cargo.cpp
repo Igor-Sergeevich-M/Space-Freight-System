@@ -85,9 +85,20 @@ void cargoDelete(std::vector<Cargo>& cargos){
     std::string name;
     std::cout<<"Введите название груза, который хотите удалить: ";
     std::cin>>name;
-     std::vector<Cargo>::iterator iter = cargos.begin();
+    std::vector<Cargo>::iterator iter = cargos.begin();
     for(Cargo n : cargos){
         if (n.cargoName==name) cargos.erase(iter);
         ++iter;
     }
+}
+void cargoChange(std::vector<Cargo>& cargos){
+    std::string name;
+    std::cout<<"Введите название груза, который хотите изменить: ";
+    std::cin>>name;
+    int i=0;
+    for(Cargo n : cargos){
+        if (n.cargoName==name) cargoInput( i, cargos);;
+        i++;
+    }
+    cargos.pop_back();
 }
