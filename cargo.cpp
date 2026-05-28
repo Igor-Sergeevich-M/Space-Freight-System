@@ -1,5 +1,7 @@
 #include "cargo.h"
 #include <vector>
+#include <cstring>
+#include <algorithm>
 #include <iostream>
 
 void showChoice(bool live, bool amaxo, bool danger){
@@ -60,4 +62,32 @@ void cargoInput(int i, std::vector<Cargo>& cargoList){
         std::cout << "\033[A\33[2K\r";
         std::cout << "\033[A\33[2K\r";
     }while (choice!=0);
+}
+void cargoOutput(std::vector<Cargo>& cargoList){
+    int n=cargoList.size();
+    std::cout<<"======================================= Список грузов ========================================\n";
+    for(int i=0; i<n; i++){
+        std::cout << "► ГРУЗ №" << i + 1 << ": \"" << cargoList[i].cargoName << "\"\n";
+        std::cout << "  [Общие параметры]: Всего " << cargoList[i].cargoMass << " т. | " << cargoList[i].cargoGabarits << " м^3\n";
+
+        std::cout << "  [Особый статус]:   ";
+        if (cargoList[i].cargoDanger) std::cout << "[ КРИТИЧЕСКАЯ УГРОЗА ] ";
+        if (cargoList[i].cargoAmaxophobe) std::cout << "[ ОГРАНИЧЕНИЕ СКОРОСТИ СС <= 25] ";
+        if (cargoList[i].cargoCreature) std::cout << "[ ФЛОРА/ФАУНА] ";
+        if (!cargoList[i].cargoDanger && !cargoList[i].cargoAmaxophobe && !cargoList[i].cargoCreature) {
+            std::cout << "[Стандартный коммерческий груз]";
+        }
+        std::cout << "\n";
+        std::cout<<"==============================================================================================\n";
+    }
+}
+void cargoDelete(std::vector<Cargo>& cargos){
+    std::string name;
+    std::cout<<"Введите название груза, который хотите удалить: ";
+    std::cin>>name;
+     std::vector<Cargo>::iterator iter = cargos.begin();
+    for(Cargo n : cargos){
+        if (n.cargoName==name) cargos.erase(iter);
+        ++iter;
+    }
 }

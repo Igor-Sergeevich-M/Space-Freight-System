@@ -14,3 +14,5 @@ struct Cargo {
 void showChoice(bool live, bool amaxo, bool danger);
 void helpTxt();
 void cargoInput(int i, std::vector<Cargo>& cargoList);
+void cargoOutput(std::vector<Cargo>& cargoList);
+void cargoDelete(std::vector<Cargo>& cargos);
