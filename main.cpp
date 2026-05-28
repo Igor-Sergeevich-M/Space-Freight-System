@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <string>
 #include <vector>
+#include <iomanip>
 #include <windows.h> // Добавили для корректной работы кодировки и очистки в Windows
 #include "Cargo.h"
 #include "Station.h"
@@ -63,7 +64,42 @@ double totalShipTime(const vector<Ship> ships, const vector<Station> stations, c
     return maxTime;
 }
 void infoOut(const vector<Ship> ships, const vector<Station> stations, const Station& From, const Station& To, double INF){
-    
+    // 1. Защита от пустого вектора
+    if (ships.empty()) {
+        std::cout << "| " << setw(60) << "Нет доступных кораблей" << " | " 
+                  << setw(10) << "0.00" << " | " << setw(7) << "0.00" << " |\n";
+        return;
+    }
+    int n=ships.size();
+    std::string shipsOut=ships[0].shipName;
+    std::cout<<"| ";
+    int count=1;
+    for(int i=1; i<n; i++){
+        if (ships[i].shipName==ships[i-1].shipName){ count++;
+        }else if (count==1){ shipsOut.append(", "); shipsOut.append(ships[i].shipName);
+        }else{
+            shipsOut.append("x");
+            shipsOut.append(std::to_string(count));
+            shipsOut.append(", ");
+            shipsOut.append(ships[i].shipName);
+            count=1;
+        }
+        if  (i==n-1 && count!=1){
+            shipsOut.append("x");
+            shipsOut.append(std::to_string(count));
+        }
+    }
+    std::cout<<setw(60)<<left<<shipsOut<<" | ";
+    std::cout<<setw(10)<<left<<fixed<<setprecision(2)<<allShipsPrice(ships,stations, From, To, INF)<<" | ";
+    std::cout<<setw(7)<<left<<fixed<<setprecision(2)<<totalShipTime(ships,stations, From, To, INF)<<" |\n";
+}
+void printTableHead() {
+    std::cout << "┌" << std::string(62, '─') << "┬" << std::string(12, '─') << "┬" << std::string(9, '─') << "┐\n";
+    std::cout << "| " << std::setw(60) << std::left  << "СОСТАВ КОСМИЧЕСКОГО ФЛОТА" << " | "
+              << std::setw(10) << std::right << "ЦЕНА (кред)"  << " | "
+              << std::setw(7)  << std::right << "ВРЕМЯ (ч)"   << " |\n";
+              
+    std::cout << "├" << std::string(62, '─') << "┼" << std::string(12, '─') << "┼" << std::string(9, '─') << "┤\n";
 }
 int main() {
     #ifdef _WIN32
