@@ -92,14 +92,33 @@ void infoOut(const vector<Ship> ships, const vector<Station> stations, const Sta
     std::cout<<setw(60)<<left<<shipsOut<<" | ";
     std::cout<<setw(10)<<left<<fixed<<setprecision(2)<<allShipsPrice(ships,stations, From, To, INF)<<" | ";
     std::cout<<setw(7)<<left<<fixed<<setprecision(2)<<totalShipTime(ships,stations, From, To, INF)<<" |\n";
+    std::cout << "├" << std::string(62, '─') << "┼" << std::string(12, '─') << "┼" << std::string(9, '─') << "┤\n";
 }
 void printTableHead() {
     std::cout << "┌" << std::string(62, '─') << "┬" << std::string(12, '─') << "┬" << std::string(9, '─') << "┐\n";
     std::cout << "| " << std::setw(60) << std::left  << "СОСТАВ КОСМИЧЕСКОГО ФЛОТА" << " | "
               << std::setw(10) << std::right << "ЦЕНА (кред)"  << " | "
-              << std::setw(7)  << std::right << "ВРЕМЯ (ч)"   << " |\n";
+              << std::setw(7)  << std::right << "ВРЕМЯ (д)"   << " |\n";
               
     std::cout << "├" << std::string(62, '─') << "┼" << std::string(12, '─') << "┼" << std::string(9, '─') << "┤\n";
+}
+void sortShips(std::vector<std::vector<Ship>>& shipsX2, const vector<Station> stations, const Station& From, const Station& To, double INF) {
+    int n = shipsX2.size();
+    bool swapped;
+
+    for (int i = 0; i < n - 1; i++) {
+        swapped = false; // Сбрасываем флаг в начале каждого прохода
+        for (int j = 0; j < n - i - 1; j++) {
+            if (allShipsPrice(shipsX2[j], stations, From, To, INF)>allShipsPrice(shipsX2[j+1], stations, From, To, INF)) {
+                std::swap(shipsX2[j], shipsX2[j + 1]); 
+                swapped = true; // Запоминаем, что перестановка была
+            }
+        }
+        // Если перестановок не было — массив готов, выходим раньше времени!
+        if (!swapped) {
+            break;
+        }
+    }
 }
 int main() {
     #ifdef _WIN32
@@ -110,7 +129,6 @@ int main() {
     #endif
 
     std::vector<Cargo> cargoList;
-
     int cargoAmount;
 
     title();
