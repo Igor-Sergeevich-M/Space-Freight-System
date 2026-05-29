@@ -1,0 +1,26 @@
+[
+  {
+    "shipName": "Small",
+    "maxMass": 1000,
+    "maxGab": 500,
+    "maxSpeed": 40,
+    "fuelEfficiency": 75,
+    "fuelTank": 375
+  },
+  {
+    "shipName": "Medium",
+    "maxMass": 4000,
+    "maxGab": 1000,
+    "maxSpeed": 20,
+    "fuelEfficiency": 100,
+    "fuelTank": 700
+  },
+  {
+    "shipName": "Large",
+    "maxMass": 6000,
+    "maxGab": 1500,
+    "maxSpeed": 10,
+    "fuelEfficiency": 125,
+    "fuelTank": 1375
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "stationName": "Ross248",
+    "x": -10.1,
+    "y": 1.1
+  },
+  {
+    "stationName": "Luyten726",
+    "x": -8.3,
+    "y": -2.8
+  },
+  {
+    "stationName": "Lalande21185",
+    "x": -6.8,
+    "y": -4.7
+  },
+  {
+    "stationName": "Luhman16",
+    "x": -6.2,
+    "y": -1.8
+  },
+  {
+    "stationName": "Barnards",
+    "x": -5.9,
+    "y": 0.5
+  },
+  {
+    "stationName": "Sun",
+    "x": 0.0,
+    "y": 0.0
+  },
+  {
+    "stationName": "Wolf359",
+    "x": 0.2,
+    "y": 7.8
+  },
+  {
+    "stationName": "WISE855",
+    "x": 4.0,
+    "y": 6.2
+  },
+  {
+    "stationName": "Centauri",
+    "x": 4.3,
+    "y": 0.0
+  },
+  {
+    "stationName": "Sirius",
+    "x": 8.5,
+    "y": -1.2
+  },
+  {
+    "stationName": "Ross154",
+    "x": 9.6,
+    "y": -1.1
+  }
+]
