@@ -102,3 +102,37 @@ void cargoChange(std::vector<Cargo>& cargos){
     }
     cargos.pop_back();
 }
+void sortCargoGab(std::vector<Cargo>& cargos) {
+    int n = cargos.size();
+    bool swapped;
+    for (int i = 0; i < n - 1; i++) {
+        swapped = false; // Сбрасываем флаг в начале каждого прохода
+        for (int j = 0; j < n - i - 1; j++) {
+            if (cargos[j].cargoGabarits>cargos[j+1].cargoGabarits) {
+                std::swap(cargos[j], cargos[j + 1]); 
+                swapped = true; // Запоминаем, что перестановка была
+            }
+        }
+        // Если перестановок не было — массив готов, выходим раньше времени!
+        if (!swapped) {
+            break;
+        }
+    }
+}
+void sortCargoMass(std::vector<Cargo>& cargos) {
+    int n = cargos.size();
+    bool swapped;
+    for (int i = 0; i < n - 1; i++) {
+        swapped = false; // Сбрасываем флаг в начале каждого прохода
+        for (int j = 0; j < n - i - 1; j++) {
+            if (cargos[j].cargoMass>cargos[j+1].cargoMass) {
+                std::swap(cargos[j], cargos[j + 1]); 
+                swapped = true; // Запоминаем, что перестановка была
+            }
+        }
+        // Если перестановок не было — массив готов, выходим раньше времени!
+        if (!swapped) {
+            break;
+        }
+    }
+}

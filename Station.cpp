@@ -10,7 +10,7 @@ double Distance(const Station& From, const Station& To) {
     return stationDistance;
 }
 //Вычисление дистанции между несколькими станциями
-double multiDistance(const vector<Station> stations) {
+double multiDistance(const vector<Station>& stations) {
     int n=stations.size();
     double distance=0;
     for (int i=1; i<n; i++){
@@ -24,9 +24,12 @@ int StationIdx(const vector<Station>& stations, string name){
     for (int i=0; i<n; i++){
         if (stations[i].stationName==name) return i;
     }
+    return -1;
 }
 //Вычисление кратчайшего маршрута по алгоритму Дейкстры
-vector<Station> PathFinder(const vector<Station>& stations, int startIdx, int endIdx, double fuelLimit, double INF) {
+vector<Station> PathFinder(const vector<Station>& stations, const Station& From, const Station& To, double fuelLimit, double INF) {
+    int startIdx=StationIdx(stations, From.stationName);
+    int endIdx=StationIdx(stations, To.stationName);
     int n=stations.size();
     vector<double> dist(n, INF);//Расстояние каждой точки до начальной (пока не нашли-бесконечное)
     dist[startIdx]=0;
