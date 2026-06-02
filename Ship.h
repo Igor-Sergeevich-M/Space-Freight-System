@@ -1,9 +1,8 @@
 #pragma once
 #include <string>
 #include "json.hpp"
-using namespace std;
 struct Ship {
-    string shipName;
+    std::string shipName;
     int maxMass;
     int maxGab;
     int maxSpeed;

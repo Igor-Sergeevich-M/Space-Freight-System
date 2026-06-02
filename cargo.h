@@ -5,7 +5,6 @@ struct Cargo {
     std::string cargoName;
     int cargoMass;
     int cargoGabarits;
-    bool cargoPasanger;
     bool cargoCreature;   
     bool cargoAmaxophobe; 
     bool cargoDanger; 

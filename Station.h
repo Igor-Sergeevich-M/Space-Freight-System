@@ -1,9 +1,8 @@
 #pragma once
 #include <string>
 #include "json.hpp"
-using namespace std;
 struct Station {
-    string stationName;
+    std::string stationName;
     double x;
     double y;
 };
@@ -11,6 +10,6 @@ struct Station {
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Station, stationName, x, y)
 
 double Distance(const Station& From, const Station& To);
-double multiDistance(const vector<Station>& stations);
-int StationIdx(const vector<Station>& stations, string name);
-vector<Station> PathFinder(const vector<Station>& stations, const Station& From, const Station& To, double fuelLimit, double INF);
+double multiDistance(const std::vector<Station>& stations);
+int StationIdx(const std::vector<Station>& stations, std::string name);
+std::vector<Station> PathFinder(const std::vector<Station>& stations, const Station& From, const Station& To, double fuelLimit, double INF);

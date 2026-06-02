@@ -46,7 +46,7 @@ double shipCost(const Ship& ship, std::vector<Station> path){
     double totalShipCost=totalFuelPrice+totalParkingPrice;
     return totalShipCost;
 }
-double allShipsPrice(const vector<Ship>& ships, const vector<Station>& stations, const Station& From, const Station& To, double INF){
+double allShipsPrice(const std::vector<Ship>& ships, const std::vector<Station>& stations, const Station& From, const Station& To, double INF){
     double totalCost=0;
     int n=ships.size();
     for(int i=0; i<n; i++){
@@ -57,7 +57,7 @@ double allShipsPrice(const vector<Ship>& ships, const vector<Station>& stations,
 double shipTime(const Ship& ship, std::vector<Station> path){
     return (365.0/ship.maxSpeed)*multiDistance(path);
 }
-double totalShipTime(const vector<Ship>& ships, const vector<Station>& stations, const Station& From, const Station& To, double INF){
+double totalShipTime(const std::vector<Ship>& ships, const std::vector<Station>& stations, const Station& From, const Station& To, double INF){
     double maxTime=0.0;
     int n=ships.size();
     for(int i=0; i<n; i++){
@@ -76,15 +76,7 @@ void printTableHead() {
     std::cout << "├" << std::string(62, '-') << "┼" << std::string(13, '-') << "┼" << std::string(11, '-') << "┤\n";
 }
 
-void infoOut(const vector<Ship>& ships, const vector<Station>& stations, const Station& From, const Station& To, double INF){
-    if (ships.empty()) {
-        std::cout << "| " << std::setw(60) << std::left  << "Нет доступных кораблей" << " | " 
-                  << std::setw(11) << std::right << "0.00" << " | " 
-                  << std::setw(9)  << std::right << "0.00" << " |\n";
-        std::cout << "├" << std::string(62, '-') << "┼" << std::string(13, '-') << "┼" << std::string(11, '-') << "┤\n";
-        return;
-    }
-    
+void infoOut(const std::vector<Ship>& ships, const std::vector<Station>& stations, const Station& From, const Station& To, double INF){
     int n = ships.size();
     std::string shipsOut = ships[0].shipName;
     int count = 1;
@@ -113,7 +105,7 @@ void infoOut(const vector<Ship>& ships, const vector<Station>& stations, const S
     
     std::cout << "├" << std::string(62, '-') << "┼" << std::string(13, '-') << "┼" << std::string(11, '-') << "┤\n";
 }
-void sortShipsByCost(std::vector<std::vector<Ship>>& shipsX2, const vector<Station> stations, const Station& From, const Station& To, double INF) {
+void sortShipsByCost(std::vector<std::vector<Ship>>& shipsX2, const std::vector<Station> stations, const Station& From, const Station& To, double INF) {
     int n = shipsX2.size();
     bool swapped;
     for (int i = 0; i < n - 1; i++) {
@@ -139,7 +131,7 @@ void deleteBadShips(std::vector<Ship>& ships, const std::vector<Station>& statio
         ships.end()
     );
 }
-std::vector<std::vector<Ship>> cargoSort(const vector<Ship>& ships, const vector<Station>& stations, const vector<Cargo>& cargos, const Station& From, const Station& To, double INF) {
+std::vector<std::vector<Ship>> cargoSort(const std::vector<Ship>& ships, const std::vector<Station>& stations, const std::vector<Cargo>& cargos, const Station& From, const Station& To, double INF) {
     std::vector<std::vector<Ship>> allVariants;
 
     //Отсеиваем корабли, которым не хватит топлива долететь
@@ -349,11 +341,12 @@ int main() {
         std::cout<<"Ваш выбор: ";
         std::cin>>choice;
         switch (choice) {
-               case 1: {cargoInput(cargoList.size(), cargoList); break;}
-              case 2: {cargoDelete(cargoList); break;}
-              case 3: {cargoChange(cargoList); break;}
-              default: {std::cout<<"Пожалуйста введите подходящую цифру от 0 до 9\n"; break;}
-            }
+            case 1: {cargoInput(cargoList.size(), cargoList); break;}
+            case 2: {cargoDelete(cargoList); break;}
+            case 3: {cargoChange(cargoList); break;}
+            case 0: break;
+            default: {std::cout<<"Пожалуйста введите подходящую цифру от 0 до 9\n"; break;}
+        }
     }while(choice!=0);
 
     //Ввод пути
@@ -396,15 +389,17 @@ int main() {
     std::vector<std::vector<Ship>> Answer = cargoSort(ships, stations, cargoList, From, To, INF);
     sortShipsByCost(Answer, stations, From, To, INF);
     printTableHead();
-    for (vector<Ship> shipN : Answer){
+    if (Answer.empty()) {
+        std::cout << "| " << std::setw(80) << std::left  << "Нет доступных кораблей" << " | " 
+                  << std::setw(11) << std::right << "0.00" << " | " 
+                  << std::setw(9)  << std::right << "0.00" << " |\n";
+        std::cout << "├" << std::string(62, '-') << "┼" << std::string(13, '-') << "┼" << std::string(11, '-') << "┤\n";
+    }
+    for (std::vector<Ship> shipN : Answer){
         infoOut(shipN, stations, From, To, INF);
     }
     
-    std::cout << "Нажмите Enter для выхода из системы снабжения...";
-
-    if (std::cin.peek() == '\n') {
-        std::cin.ignore();
-    }
+    std::cout << "Нажмите Enter для выхода из системы снабжения...\n";
     std::cin.get();
     
     return 0;

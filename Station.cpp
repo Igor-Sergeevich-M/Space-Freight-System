@@ -3,14 +3,13 @@
 #include <vector>
 #include <cstring>
 
-using namespace std;
 //Вычисление дистанции между станциями
 double Distance(const Station& From, const Station& To) {
     double stationDistance = sqrt(pow((To.x - From.x), 2) + pow((To.y - From.y), 2));
     return stationDistance;
 }
 //Вычисление дистанции между несколькими станциями
-double multiDistance(const vector<Station>& stations) {
+double multiDistance(const std::vector<Station>& stations) {
     int n=stations.size();
     double distance=0;
     for (int i=1; i<n; i++){
@@ -19,7 +18,7 @@ double multiDistance(const vector<Station>& stations) {
     return distance;
 }
 //Поиск станции по имени
-int StationIdx(const vector<Station>& stations, string name){
+int StationIdx(const std::vector<Station>& stations, std::string name){
     int n=stations.size();
     for (int i=0; i<n; i++){
         if (stations[i].stationName==name) return i;
@@ -27,14 +26,14 @@ int StationIdx(const vector<Station>& stations, string name){
     return -1;
 }
 //Вычисление кратчайшего маршрута по алгоритму Дейкстры
-vector<Station> PathFinder(const vector<Station>& stations, const Station& From, const Station& To, double fuelLimit, double INF) {
+std::vector<Station> PathFinder(const std::vector<Station>& stations, const Station& From, const Station& To, double fuelLimit, double INF) {
     int startIdx=StationIdx(stations, From.stationName);
     int endIdx=StationIdx(stations, To.stationName);
     int n=stations.size();
-    vector<double> dist(n, INF);//Расстояние каждой точки до начальной (пока не нашли-бесконечное)
+    std::vector<double> dist(n, INF);//Расстояние каждой точки до начальной (пока не нашли-бесконечное)
     dist[startIdx]=0;
-    vector<bool> visited(n, false);
-    vector<int> parent(n, -1);//Каждой звезде будет присваеватся индекс системы из которой в неё прилетели
+    std::vector<bool> visited(n, false);
+    std::vector<int> parent(n, -1);//Каждой звезде будет присваеватся индекс системы из которой в неё прилетели
     
     for (int i=0; i<n; ++i) {
         int v=-1;
@@ -44,8 +43,10 @@ vector<Station> PathFinder(const vector<Station>& stations, const Station& From,
                 v=j;
             }
         }
-        if (dist[v]==INF) break; //Если не нашли выходим из функции
+        if (v == -1 || dist[v] == INF) break;
         visited[v] = true;
+        if (v == endIdx) break;
+
         for (int to = 0; to < n; ++to) {
             if (v == to) continue;
             double edgeWeight=Distance(stations[v], stations[to]);
@@ -56,7 +57,10 @@ vector<Station> PathFinder(const vector<Station>& stations, const Station& From,
             }
         }
     }
-    vector<Station> path;
+    if (dist[endIdx] == INF) {
+        return std::vector<Station>(); // Пути нет, возвращаем пустой вектор!
+    }
+    std::vector<Station> path;
     for (int v=endIdx; v!=-1; v=parent[v]) {
         path.push_back(stations[v]);
     }
@@ -64,7 +68,7 @@ vector<Station> PathFinder(const vector<Station>& stations, const Station& From,
     return path;
 }
 //Стоимость проезда через все станции на пути
-double serviceCost(const vector<Station>& stations, double cost_per_station){
+double serviceCost(const std::vector<Station>& stations, double cost_per_station){
     int n=stations.size();
     double price=0;
     for (int i=1; i<n; i++){

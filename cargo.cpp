@@ -11,7 +11,7 @@ void showChoice(bool live, bool amaxo, bool danger){
     if (amaxo==true){ std::cout<<"| 2. Тахочувствительный[x] ";
     }else std::cout<<"| 2. Тахочувствительный[ ] ";
     if (danger==true){ std::cout<<"| 3. Опасный[x] ";
-    }else std::cout<<"| 3. Опасный [ ] ";
+    }else std::cout<<"| 3. Опасный[ ] ";
     std::cout<<"| 4. Описание ";
     std::cout<<"| 0. Подвердить типы |\n";
     std::cout<<"Ваш выбор: ";
@@ -52,10 +52,19 @@ void cargoInput(int i, std::vector<Cargo>& cargoList){
         showChoice(cargoList[i].cargoCreature, cargoList[i].cargoAmaxophobe, cargoList[i].cargoDanger);
         std::cin>>choice;
         switch (choice) {
-            case 1: {cargoList[i].cargoCreature=!cargoList[i].cargoCreature; break;}
+            case 1: {
+                cargoList[i].cargoCreature=!cargoList[i].cargoCreature;
+                if(cargoList[i].cargoDanger==true) cargoList[i].cargoDanger=false;
+                break;
+            }
             case 2: {cargoList[i].cargoAmaxophobe=!cargoList[i].cargoAmaxophobe; break;}
-            case 3: {cargoList[i].cargoDanger=!cargoList[i].cargoDanger; break;}
+            case 3: {
+                cargoList[i].cargoDanger=!cargoList[i].cargoDanger; 
+                if(cargoList[i].cargoCreature==true) cargoList[i].cargoCreature=false;
+                break;
+            }
             case 4: {helpTxt(); break;}
+            case 0: break;
             default: {std::cout<<"Пожалуйста введите подходящую цифру от 0 до 9\n"; break;}
         }
         std::cout << "\033[A\33[2K\r";
@@ -83,12 +92,17 @@ void cargoOutput(std::vector<Cargo>& cargoList){
 }
 void cargoDelete(std::vector<Cargo>& cargos){
     std::string name;
-    std::cout<<"Введите название груза, который хотите удалить: ";
-    std::cin>>name;
-    std::vector<Cargo>::iterator iter = cargos.begin();
-    for(Cargo n : cargos){
-        if (n.cargoName==name) cargos.erase(iter);
-        ++iter;
+    std::cout << "Введите название груза, который хотите удалить: ";
+    std::cin >> name;
+    auto it = std::remove_if(cargos.begin(), cargos.end(), [&](const Cargo& c) {
+        return c.cargoName == name;
+    });
+    
+    if (it != cargos.end()) {
+        cargos.erase(it, cargos.end());
+        std::cout << "Груз успешно удален!\n";
+    } else {
+        std::cout << "Груз с таким названием не найден.\n";
     }
 }
 void cargoChange(std::vector<Cargo>& cargos){
@@ -96,9 +110,18 @@ void cargoChange(std::vector<Cargo>& cargos){
     std::cout<<"Введите название груза, который хотите изменить: ";
     std::cin>>name;
     int i=0;
+    bool found=false;
     for(Cargo n : cargos){
-        if (n.cargoName==name) cargoInput( i, cargos);;
+        if (n.cargoName==name){
+            cargoInput( i, cargos);
+            found=true;
+            break;
+        }
         i++;
+    }
+    if(!found){
+        std::cout<<"Груз с именем '"<<name<<"' не найден";
+        return;
     }
     cargos.pop_back();
 }
