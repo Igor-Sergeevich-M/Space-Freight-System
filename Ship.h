@@ -14,5 +14,3 @@ struct Ship {
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Ship, shipName, maxMass, maxGab, maxSpeed, fuelEfficiency, fuelTank)
 
 double fuelDistance(const Ship& Ship);
-void sortShipMass(std::vector<Ship>& ships);
-void sortShipGab(std::vector<Ship>& ships);

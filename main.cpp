@@ -124,7 +124,7 @@ void sortShipsByCost(std::vector<std::vector<Ship>>& shipsX2, const vector<Stati
                 swapped = true; // Запоминаем, что перестановка была
             }
         }
-        // Если перестановок не было — массив готов, выходим раньше времени!
+        // Если перестановок не было - массив готов, выходим раньше времени
         if (!swapped) {
             break;
         }
@@ -139,38 +139,163 @@ void deleteBadShips(std::vector<Ship>& ships, const std::vector<Station>& statio
         ships.end()
     );
 }
-std::vector<std::vector<Ship>> cargoSort(const vector<Ship> ships, const vector<Station> stations, const vector<Cargo> cargos, const Station& From, const Station& To, double INF){
-    int n=cargos.size();
+std::vector<std::vector<Ship>> cargoSort(const vector<Ship>& ships, const vector<Station>& stations, const vector<Cargo>& cargos, const Station& From, const Station& To, double INF) {
     std::vector<std::vector<Ship>> allVariants;
-    std::vector<Cargo> maxMass=cargos, maxGab=cargos;
-    sortCargoMass(maxMass);
-    sortCargoGab(maxGab);
-    std::vector<Ship> allowedShips=ships;
+
+    //Отсеиваем корабли, которым не хватит топлива долететь
+    std::vector<Ship> allowedShips = ships;
     deleteBadShips(allowedShips, stations, From, To, INF);
-    std::vector<Ship> maxMassShips=allowedShips, maxGabShips=allowedShips;
-    sortShipMass(maxMassShips);
-    sortShipGab(maxGabShips);
-    std::vector<Ship> goShips;
-    Ship minAllovedMassShip=maxMassShips[0];
-    int minMassIdx;
-    for(int i=0; i<maxMassShips.size(); i++){
-        if (maxMass[0].cargoMass<=maxMassShips[i].maxMass){
-            if(minAllovedMassShip.maxMass>maxMassShips[i].maxMass){
-                minAllovedMassShip.maxMass=maxMassShips[i].maxMass;
-                minMassIdx=i;
-             }
+    if (allowedShips.empty()) return allVariants; // Если лететь некому
+
+    //Сортируем корабли по грузоподъемности (по возрастанию), чтобы всегда брать минимально подходящий
+    std::sort(allowedShips.begin(), allowedShips.end(), [](const Ship& a, const Ship& b) {
+        return a.maxMass < b.maxMass;
+    });
+
+    //Сортируем грузы по убыванию массы
+    std::vector<Cargo> sortedCargos = cargos;
+    std::sort(sortedCargos.begin(), sortedCargos.end(), [](const Cargo& a, const Cargo& b) {
+        return a.cargoMass > b.cargoMass;
+    });
+
+    //Вспомогательная структура: "Корабль в рейсе", чтобы следить за его заполнением
+    struct ActiveShip {
+        Ship shipDef;
+        int usedMass = 0;
+        int usedGab = 0;
+        bool hasCreature = false;
+        bool hasDanger = false;
+    };
+
+    std::vector<ActiveShip> mixedFleet;
+    bool mixedPossible = true;
+
+    for (const Cargo& c : sortedCargos) {
+        bool placed = false;
+        
+        // Сначала пытаемся доложить груз в уже вызванные корабли флота
+        for (ActiveShip& as : mixedFleet) {
+            // Проверка особых условий
+            if (c.cargoAmaxophobe && as.shipDef.maxSpeed > 25) continue; // Тахочувствительным нельзя быстро
+            if (c.cargoCreature && as.hasDanger) continue; // Живое нельзя к опасному
+            if (c.cargoDanger && as.hasCreature) continue; // Опасное нельзя к живому
+            
+            // Проверка вместимости (масса и габариты)
+            if (as.usedMass + c.cargoMass <= as.shipDef.maxMass && 
+                as.usedGab + c.cargoGabarits <= as.shipDef.maxGab) {
+                
+                as.usedMass += c.cargoMass;
+                as.usedGab += c.cargoGabarits;
+                if (c.cargoCreature) as.hasCreature = true;
+                if (c.cargoDanger) as.hasDanger = true;
+                placed = true;
+                break;
+            }
+        }
+
+        // Если груз не влез ни в один текущий корабль, вызываем новый соразмерный
+        if (!placed) {
+            bool foundNewShip = false;
+            for (const Ship& s : allowedShips) {
+                // Ищем минимальный корабль, который потянет этот груз
+                if (c.cargoAmaxophobe && s.maxSpeed > 25) continue;
+                
+                if (c.cargoMass <= s.maxMass && c.cargoGabarits <= s.maxGab) {
+                    ActiveShip newShip;
+                    newShip.shipDef = s;
+                    newShip.usedMass = c.cargoMass;
+                    newShip.usedGab = c.cargoGabarits;
+                    newShip.hasCreature = c.cargoCreature;
+                    newShip.hasDanger = c.cargoDanger;
+                    
+                    mixedFleet.push_back(newShip);
+                    foundNewShip = true;
+                    placed = true;
+                    break;
+                }
+            }
+            // Если груз настолько огромный или специфичный, что ни один корабль его не тянет
+            if (!foundNewShip) {
+                mixedPossible = false; 
+                break;
+            }
         }
     }
-    int massIn=0;
-    for(int i=0; i<n;i++){
-        if (massIn<maxMass[i].cargoMass){
-            massIn=maxMassShips[minMassIdx].maxMass;
-            goShips.push_back(maxMassShips[minMassIdx]);
-        }
-        massIn=massIn-maxMass[i].cargoMass;
+
+    if (mixedPossible && !mixedFleet.empty()) {
+        std::vector<Ship> variant;
+        for (const auto& as : mixedFleet) variant.push_back(as.shipDef);
+        allVariants.push_back(variant);
     }
-    allVariants.push_back(goShips);
-    return allVariants;
+
+    for (const Ship& s : allowedShips) {
+        std::vector<ActiveShip> homFleet;
+        bool homPossible = true;
+
+        for (const Cargo& c : sortedCargos) {
+            // Если этот тип кораблей в принципе не может везти этот груз - отменяем этот вариант
+            if (c.cargoAmaxophobe && s.maxSpeed > 25) { homPossible = false; break; }
+            if (c.cargoMass > s.maxMass || c.cargoGabarits > s.maxGab) { homPossible = false; break; }
+
+            bool placed = false;
+            for (ActiveShip& as : homFleet) {
+                if (c.cargoCreature && as.hasDanger) continue;
+                if (c.cargoDanger && as.hasCreature) continue;
+                
+                if (as.usedMass + c.cargoMass <= s.maxMass && 
+                    as.usedGab + c.cargoGabarits <= s.maxGab) {
+                    
+                    as.usedMass += c.cargoMass;
+                    as.usedGab += c.cargoGabarits;
+                    if (c.cargoCreature) as.hasCreature = true;
+                    if (c.cargoDanger) as.hasDanger = true;
+                    placed = true;
+                    break;
+                }
+            }
+
+            // Вызываем еще один корабль такого же типа
+            if (!placed) {
+                ActiveShip newShip;
+                newShip.shipDef = s;
+                newShip.usedMass = c.cargoMass;
+                newShip.usedGab = c.cargoGabarits;
+                newShip.hasCreature = c.cargoCreature;
+                newShip.hasDanger = c.cargoDanger;
+                homFleet.push_back(newShip);
+            }
+        }
+
+        if (homPossible && !homFleet.empty()) {
+            std::vector<Ship> variant;
+            for (const auto& as : homFleet) variant.push_back(as.shipDef);
+            allVariants.push_back(variant);
+        }
+    }
+
+    std::vector<std::vector<Ship>> uniqueVariants;
+    for (const auto& var : allVariants) {
+        bool isDuplicate = false;
+        for (const auto& uVar : uniqueVariants) {
+            if (var.size() == uVar.size()) {
+                std::vector<std::string> vNames, uNames;
+                for (const auto& s : var) vNames.push_back(s.shipName);
+                for (const auto& s : uVar) uNames.push_back(s.shipName);
+                std::sort(vNames.begin(), vNames.end());
+                std::sort(uNames.begin(), uNames.end());
+                
+                if (vNames == uNames) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+        }
+        if (!isDuplicate) {
+            uniqueVariants.push_back(var);
+        }
+    }
+
+    return uniqueVariants;
 }
 int main() {
     #ifdef _WIN32
